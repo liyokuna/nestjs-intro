@@ -2,12 +2,12 @@ import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { TaskStatus } from './task.model';
 
 export class CreateTaskDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   title: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   description: string;
 
   @IsNotEmpty()
