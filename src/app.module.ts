@@ -5,20 +5,30 @@ import { DummyService } from './dummy/dummy.service';
 import { LoggerService } from './logger/logger.service';
 import { messageFromatter } from './helpers/message-formatter.helper';
 import { TasksModule } from './tasks/tasks.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { appConfig } from 'config/app.config';
-import { appConfigSchema } from 'config/config.types';
+import { appConfigSchema, ConfigType } from 'config/config.types';
+import { typeOrmConfig } from 'config/database.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    /*TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ConfigType>) => ({
+        ...configService.get('database'),
+      }),
+    }),*/
     ConfigModule.forRoot({
-      load: [appConfig],
+      load: [appConfig, typeOrmConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
         allowUnknown: true, // every single time nest sj run time and found an exception it throw an exception
         abortEarly: true, //
       },
     }),
+    TypeOrmModule.forRoot(typeOrmConfig()),
     TasksModule,
   ],
   controllers: [AppController],
