@@ -17,6 +17,8 @@ import { FindOneParams } from './find-one.params';
 import { UpdateTaskStatusDto } from './update-task-status.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { Task } from './task.entity';
+import { CreateTaskLabelDTO } from './create-task-label.dto';
+import { UpdateTaskDto } from './update-task.dto';
 
 @Controller('tasks') // prefic for routes
 export class TasksController {
@@ -40,7 +42,7 @@ export class TasksController {
   @Patch('/:id')
   public async updateTask(
     @Param() params: FindOneParams,
-    @Body() updateTaskDto: UpdateTaskStatusDto,
+    @Body() updateTaskDto: UpdateTaskDto,
   ): Promise<Task> {
     const task = await this.findOneOrFail(params.id);
     try {
@@ -58,6 +60,25 @@ export class TasksController {
   public async deleteTask(@Param() params: FindOneParams): Promise<void> {
     const task = await this.findOneOrFail(params.id);
     return await this.tasksService.deleteTask(task);
+  }
+
+  @Post('/:id/labels')
+  async addLabels(
+    @Param() { id }: FindOneParams,
+    @Body() labels: CreateTaskLabelDTO[],
+  ): Promise<Task> {
+    const task = await this.findOneOrFail(id);
+    return await this.tasksService.addLabels(task, labels);
+  }
+
+  @Delete('/:id/labels')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeLabesl(
+    @Param() { id }: FindOneParams,
+    @Body() labelNames: string[],
+  ): Promise<Task> {
+    const task = await this.findOneOrFail(id);
+    return await this.tasksService.removeLabels(task, labelNames);
   }
 
   private async findOneOrFail(id: string): Promise<Task> {
