@@ -10,23 +10,39 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './create-task.dto';
-import { FindOneParams } from './find-one.params';
-import { UpdateTaskStatusDto } from './update-task-status.dto';
+import { FindOneParams } from '../common/find-one.params';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { Task } from './task.entity';
 import { CreateTaskLabelDTO } from './create-task-label.dto';
 import { UpdateTaskDto } from './update-task.dto';
+import { FindTaskParams } from '../common/find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
+import { PaginationResponse } from 'src/common/pagination.response';
 
 @Controller('tasks') // prefic for routes
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  public async findAll(): Promise<Task[]> {
-    return await this.tasksService.findAll();
+  public async findAll(
+    @Query() filters: FindTaskParams,
+    @Query() pagination: PaginationParams,
+  ): Promise<PaginationResponse<Task>> {
+    const [items, total] = await this.tasksService.findAll(filters, pagination);
+
+    return {
+      data: items,
+      meta: {
+        total,
+        ...pagination,
+        //offset: pagination.offset,
+        //limit: pagination.limit,
+      },
+    };
   }
 
   @Get('/:id')

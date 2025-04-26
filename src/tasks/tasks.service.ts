@@ -5,9 +5,11 @@ import { UpdateTaskDto } from './update-task.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { CreateTaskLabelDTO } from './create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
+import { FindTaskParams } from '../common/find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
 
 @Injectable()
 export class TasksService {
@@ -17,8 +19,28 @@ export class TasksService {
     private readonly taskLabelRepository: Repository<TaskLabel>,
   ) {}
 
-  async findAll(): Promise<Task[]> {
-    return await this.tasksRepository.find();
+  async findAll(
+    filters: FindTaskParams,
+    pagination: PaginationParams,
+  ): Promise<[Task[], number]> {
+    const where: FindOptionsWhere<Task> = {};
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    if (filters.search?.trim()) {
+      // the search is in title or description
+      where.title = Like(`%${filters.search}%`);
+      where.description = Like(`%${filters.search}%`);
+    }
+
+    return await this.tasksRepository.findAndCount({
+      where,
+      relations: ['labels'],
+      skip: pagination.offset,
+      take: pagination.limit,
+    });
   }
 
   async findOne(id: string): Promise<Task | null> {
