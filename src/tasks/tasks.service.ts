@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Search } from '@nestjs/common';
 import { TaskStatus } from './task.model';
 import { CreateTaskDto } from './create-task.dto';
 import { UpdateTaskDto } from './update-task.dto';
@@ -23,17 +23,39 @@ export class TasksService {
     filters: FindTaskParams,
     pagination: PaginationParams,
   ): Promise<[Task[], number]> {
+    const query = this.tasksRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.labels', 'labels');
     const where: FindOptionsWhere<Task> = {};
 
     if (filters.status) {
-      where.status = filters.status;
+      query.andWhere('task.status= :status', { status: filters.status });
     }
 
     if (filters.search?.trim()) {
-      // the search is in title or description
-      where.title = Like(`%${filters.search}%`);
-      where.description = Like(`%${filters.search}%`);
+      query.andWhere(
+        '(task.title ILIKE :search OR task.description ILIKE :search)',
+        { search: `%${filters.search}%` },
+      );
     }
+
+    if (filters.labels?.length) {
+      const subQuery = query
+        .subQuery()
+        .select('labels.taskId')
+        .from('task_label', 'labels')
+        .where('labels.name IN (:...names)', { names: filters.labels })
+        .getQuery();
+
+      query.andWhere(`task.id IN ${subQuery}`);
+      query.andWhere('labels.name IN(:...names)', { names: filters.labels });
+    }
+
+    query.orderBy(`task.${filters.sortBy}`, filters.sortOrder);
+
+    query.skip(pagination.offset).take(pagination.limit);
+
+    return query.getManyAndCount();
 
     return await this.tasksRepository.findAndCount({
       where,
