@@ -10,6 +10,9 @@ import { appConfig } from 'config/app.config';
 import { appConfigSchema, ConfigType } from 'config/config.types';
 import { typeOrmConfig } from 'config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { authConfig } from 'config/auth.config';
+import { UsersModule } from './users/users.module';
+import { TypedConfigService } from 'config/typed-config.service';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
     }),*/
     ConfigModule.forRoot({
-      load: [appConfig, typeOrmConfig],
+      load: [appConfig, authConfig, typeOrmConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
         allowUnknown: true, // every single time nest sj run time and found an exception it throw an exception
@@ -30,8 +33,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     TypeOrmModule.forRoot(typeOrmConfig()),
     TasksModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService, DummyService, LoggerService, messageFromatter], // necessaire car les classe votn être resolus par nest js pour faire de la dépendance d'injection
+  providers: [
+    AppService,
+    DummyService,
+    LoggerService,
+    messageFromatter,
+    TypedConfigService,
+  ], // necessaire car les classe votn être resolus par nest js pour faire de la dépendance d'injection
 })
 export class AppModule {}
