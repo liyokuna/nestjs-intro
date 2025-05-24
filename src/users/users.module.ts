@@ -4,8 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthConfig } from 'config/auth.config';
-import { TypedConfigService } from 'config/typed-config.service';
 import { PasswordService } from './password/password.service';
+import { UserService } from './user/user.service';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { PasswordService } from './password/password.service';
       }),
     }),
   ],
-  providers: [PasswordService],
+  providers: [PasswordService, UserService, AuthService],
+  controllers: [AuthController],
 })
 export class UsersModule {}
