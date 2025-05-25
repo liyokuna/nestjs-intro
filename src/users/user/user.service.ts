@@ -3,11 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { PasswordService } from '../password/password.service';
 import { User } from '../user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly passwordService: PasswordService,
   ) {}
 
