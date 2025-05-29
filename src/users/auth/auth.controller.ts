@@ -29,6 +29,6 @@ export class AuthController {
       loginDto.email,
       loginDto.password,
     );
-    return { accessToken };
+    return new LoginResponse({ accessToken });
   }
 }
