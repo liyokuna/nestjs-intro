@@ -24,6 +24,7 @@ import { TypedConfigService } from '../config/typed-config.service';
       }),
     }),*/
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [appConfig, authConfig, typeOrmConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
