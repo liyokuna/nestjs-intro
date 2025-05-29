@@ -20,8 +20,8 @@ import { Task } from './task.entity';
 import { CreateTaskLabelDTO } from './create-task-label.dto';
 import { UpdateTaskDto } from './update-task.dto';
 import { FindTaskParams } from '../common/find-task.params';
-import { PaginationParams } from 'src/common/pagination.params';
-import { PaginationResponse } from 'src/common/pagination.response';
+import { PaginationParams } from '../common/pagination.params';
+import { PaginationResponse } from '../common/pagination.response';
 
 @Controller('tasks') // prefic for routes
 export class TasksController {

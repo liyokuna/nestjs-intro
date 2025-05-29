@@ -5,14 +5,14 @@ import { DummyService } from './dummy/dummy.service';
 import { LoggerService } from './logger/logger.service';
 import { messageFromatter } from './helpers/message-formatter.helper';
 import { TasksModule } from './tasks/tasks.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { appConfig } from 'config/app.config';
-import { appConfigSchema, ConfigType } from 'config/config.types';
-import { typeOrmConfig } from 'config/database.config';
+import { ConfigModule } from '@nestjs/config';
+import { appConfig } from '../config/app.config';
+import { appConfigSchema } from '../config/config.types';
+import { typeOrmConfig } from '../config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { authConfig } from 'config/auth.config';
+import { authConfig } from '../config/auth.config';
 import { UsersModule } from './users/users.module';
-import { TypedConfigService } from 'config/typed-config.service';
+import { TypedConfigService } from '../config/typed-config.service';
 
 @Module({
   imports: [
