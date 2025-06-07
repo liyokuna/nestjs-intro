@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   private generateToken(user: User): string {
-    const playload = { sub: user.id, name: user.name };
+    const playload = { sub: user.id, name: user.name, roles: user.roles };
     return this.jwtService.sign(playload);
   }
 }
