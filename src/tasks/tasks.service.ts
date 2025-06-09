@@ -22,10 +22,12 @@ export class TasksService {
   async findAll(
     filters: FindTaskParams,
     pagination: PaginationParams,
+    userId: string,
   ): Promise<[Task[], number]> {
     const query = this.tasksRepository
       .createQueryBuilder('task')
-      .leftJoinAndSelect('task.labels', 'labels');
+      .leftJoinAndSelect('task.labels', 'labels')
+      .where('task.userId = :userId', { userId });
     const where: FindOptionsWhere<Task> = {};
 
     if (filters.status) {

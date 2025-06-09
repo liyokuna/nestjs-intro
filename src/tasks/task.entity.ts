@@ -33,6 +33,9 @@ export class Task {
   })
   status: TaskStatus;
 
+  @Column()
+  userId: string;
+
   @ManyToOne(() => User, (user) => user.task, { nullable: true })
   user: User;
 
